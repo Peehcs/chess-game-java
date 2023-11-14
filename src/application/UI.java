@@ -1,4 +1,5 @@
 package application;
+
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -9,8 +10,11 @@ import chess.ChessMatch;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import chess.Color;
+
 public class UI {
+
 	// https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
+
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLACK = "\u001B[30m";
 	public static final String ANSI_RED = "\u001B[31m";
@@ -20,6 +24,7 @@ public class UI {
 	public static final String ANSI_PURPLE = "\u001B[35m";
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_WHITE = "\u001B[37m";
+
 	public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
 	public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
 	public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
@@ -46,16 +51,25 @@ public class UI {
 			throw new InputMismatchException("Error reading ChessPosition. Valid values are from a1 to h8.");
 		}
 	}
-
+	
 	public static void printMatch(ChessMatch chessMatch, List<ChessPiece> captured) {
 		printBoard(chessMatch.getPieces());
 		System.out.println();
 		printCapturedPieces(captured);
 		System.out.println();
 		System.out.println("Turn : " + chessMatch.getTurn());
-		System.out.println("Waiting player: " + chessMatch.getCurrentPlayer());
+		if (!chessMatch.getCheckMate()) {
+			System.out.println("Waiting player: " + chessMatch.getCurrentPlayer());
+			if (chessMatch.getCheck()) {
+				System.out.println("CHECK!");
+			}
+		}
+		else {
+			System.out.println("CHECKMATE!");
+			System.out.println("Winner: " + chessMatch.getCurrentPlayer());
+		}
 	}
-
+	
 	public static void printBoard(ChessPiece[][] pieces) {
 		for (int i = 0; i < pieces.length; i++) {
 			System.out.print((8 - i) + " ");
@@ -66,6 +80,7 @@ public class UI {
 		}
 		System.out.println("  a b c d e f g h");
 	}
+
 	public static void printBoard(ChessPiece[][] pieces, boolean[][] possibleMoves) {
 		for (int i = 0; i < pieces.length; i++) {
 			System.out.print((8 - i) + " ");
@@ -76,6 +91,7 @@ public class UI {
 		}
 		System.out.println("  a b c d e f g h");
 	}
+
 	private static void printPiece(ChessPiece piece, boolean background) {
 		if (background) {
 			System.out.print(ANSI_BLUE_BACKGROUND);
@@ -93,10 +109,11 @@ public class UI {
         }
         System.out.print(" ");
 	}
+	
 	private static void printCapturedPieces(List<ChessPiece> captured) {
 		List<ChessPiece> white = captured.stream().filter(x -> x.getColor() == Color.WHITE).collect(Collectors.toList());
 		List<ChessPiece> black = captured.stream().filter(x -> x.getColor() == Color.BLACK).collect(Collectors.toList());
-		System.out.println("Captured Pices: ");
+		System.out.println("Captured pieces:");
 		System.out.print("White: ");
 		System.out.print(ANSI_WHITE);
 		System.out.println(Arrays.toString(white.toArray()));
